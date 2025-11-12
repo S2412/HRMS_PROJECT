@@ -1,0 +1,36 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<h3 class="text-center mb-4">Your Attendance Records</h3>
+<table class="table table-bordered table-striped">
+  <thead class="table-primary">
+    <tr>
+      <th>Date</th>
+      <th>Check In</th>
+      <th>Check Out</th>
+      <th>Status</th>
+      <th>Work Hours</th>
+      <th>Overtime</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for record in records %}
+    <tr>
+      <td>{{ record.date }}</td>
+      <td>{{ record.check_in|default:"-" }}</td>
+      <td>{{ record.check_out|default:"-" }}</td>
+      <td>{{ record.status }}</td>
+      <td>{{ record.work_hours }}</td>
+      <td>{% if record.is_overtime %}Yes{% else %}No{% endif %}</td>
+      <td>
+        {% if record.status != 'Regularized' %}
+          <a href="{% url 'attendance:request_regularization' record.id %}" class="btn btn-sm btn-outline-secondary">Regularize</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" class="text-center">No records found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

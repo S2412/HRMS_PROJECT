@@ -1,4 +1,11 @@
-{% extends 'accounts/base.html' %}
+{% extends 'attendance/base.html' %}
 {% block content %}
-  <h2>Welcome Employee</h2>
+<h3 class="text-center mb-4">Welcome, {{ request.user.email }}</h3>
+<div class="row">
+  <div class="col-md-6">
+    <a href="{% url 'attendance:mark_attendance' %}" class="btn btn-primary w-100 mb-3">Mark Attendance</a>
+    <a href="{% url 'attendance:view_attendance' %}" class="btn btn-outline-primary w-100 mb-3">View Records</a>
+    <a href="{% url 'attendance:monthly_summary' %}" class="btn btn-outline-secondary w-100 mb-3">Monthly Summary</a>
+  </div>
+</div>
 {% endblock %}

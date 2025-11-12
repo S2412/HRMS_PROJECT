@@ -1,5 +1,11 @@
-{% extends 'accounts/base.html' %}
+{% extends 'attendance/base.html' %}
 {% block content %}
-<h2>Welcome HR Admin</h2>
-<p>Dashboard content for HR.</p>
+<h3 class="text-center mb-4">HR Dashboard</h3>
+<div class="row">
+  <div class="col-md-6">
+    <a href="{% url 'attendance:hr_approval_list' %}" class="btn btn-warning w-100 mb-3">Pending Regularization Requests</a>
+    <a href="{% url 'attendance:monthly_summary' %}" class="btn btn-outline-secondary w-100 mb-3">Monthly Summary</a>
+    <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-success w-100 mb-3">Export CSV</a>
+  </div>
+</div>
 {% endblock %}

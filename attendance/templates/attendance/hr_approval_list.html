@@ -1,0 +1,26 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<h4 class="text-center mb-4">Pending Regularization Requests</h4>
+<table class="table table-bordered">
+  <thead class="table-primary">
+    <tr>
+      <th>Employee</th>
+      <th>Date</th>
+      <th>Reason</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for req in requests %}
+    <tr>
+      <td>{{ req.employee.email }}</td>
+      <td>{{ req.attendance.date }}</td>
+      <td>{{ req.reason }}</td>
+      <td>
+        <a href="{% url 'attendance:approve_request' req.id %}" class="btn btn-success btn-sm">Approve</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

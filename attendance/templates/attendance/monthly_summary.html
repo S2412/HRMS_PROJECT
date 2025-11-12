@@ -1,0 +1,20 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<h4 class="text-center mb-4">Monthly Attendance Summary</h4>
+<table class="table table-bordered">
+  <thead class="table-primary">
+    <tr>
+      <th>Status</th>
+      <th>Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in summary %}
+    <tr>
+      <td>{{ item.status }}</td>
+      <td>{{ item.count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
