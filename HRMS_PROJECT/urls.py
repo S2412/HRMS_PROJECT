@@ -21,8 +21,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
       path('attendance/', include('attendance.urls')),
+<<<<<<< HEAD
 
 
     
+=======
+    path('', include('accounts.urls')),
+    path('employees/', include('employee.urls')),
+
+
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
 
 ]

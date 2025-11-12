@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+<<<<<<< HEAD
+=======
+    'employee',
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
     'attendance',
 ]
 

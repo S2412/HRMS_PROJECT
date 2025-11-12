@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from datetime import datetime, time, date
 from .models import Attendance, RegularizationRequest, Holiday
+<<<<<<< HEAD
 from django.db.models import Count
 
 LATE_THRESHOLD = time(9, 30)
@@ -34,6 +35,29 @@ def mark_attendance(request):
 
     return redirect('attendance:view_attendance')
 
+=======
+from .forms import AttendanceForm, RegularizationForm
+from django.db.models import Count
+import csv
+
+LATE_THRESHOLD = time(9, 30)
+EARLY_LEAVE_THRESHOLD = time(17, 0)
+@login_required
+def mark_attendance_form(request):
+    today = timezone.now().date()
+    attendance, created = Attendance.objects.get_or_create(employee=request.user, date=today)
+
+    if request.method == 'POST':
+        form = AttendanceForm(request.POST, instance=attendance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Attendance marked successfully.")
+            return redirect('attendance:view_attendance')
+    else:
+        form = AttendanceForm(instance=attendance)
+
+    return render(request, 'attendance/mark_attendance_form.html', {'form': form})
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
 @login_required
 def view_attendance(request):
     records = Attendance.objects.filter(employee=request.user).order_by('-date')
@@ -50,11 +74,25 @@ def monthly_summary(request):
 def request_regularization(request, attendance_id):
     attendance = get_object_or_404(Attendance, id=attendance_id, employee=request.user)
     if request.method == 'POST':
+<<<<<<< HEAD
         reason = request.POST.get('reason')
         RegularizationRequest.objects.create(employee=request.user, attendance=attendance, reason=reason)
         messages.success(request, "Request submitted.")
         return redirect('attendance:view_attendance')
     return render(request, 'attendance/request_regularization.html', {'attendance': attendance})
+=======
+        form = RegularizationForm(request.POST)
+        if form.is_valid():
+            reg = form.save(commit=False)
+            reg.employee = request.user
+            reg.attendance = attendance
+            reg.save()
+            messages.success(request, "Regularization request submitted.")
+            return redirect('attendance:view_attendance')
+    else:
+        form = RegularizationForm()
+    return render(request, 'attendance/request_regularization.html', {'form': form, 'attendance': attendance})
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
 
 @login_required
 def hr_approval_list(request):
@@ -73,9 +111,12 @@ def approve_request(request, request_id):
     messages.success(request, "Request approved.")
     return redirect('attendance:hr_approval_list')
 
+<<<<<<< HEAD
 import csv
 from django.http import HttpResponse
 
+=======
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
 @login_required
 def export_attendance_csv(request):
     records = Attendance.objects.filter(employee=request.user)
@@ -87,7 +128,10 @@ def export_attendance_csv(request):
         writer.writerow([r.date, r.check_in, r.check_out, r.status, r.work_hours()])
     return response
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
 @login_required
 def dashboard(request):
     if request.user.role == 'HR_ADMIN':

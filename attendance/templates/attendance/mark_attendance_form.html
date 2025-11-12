@@ -1,0 +1,48 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">Manual Attendance Form</h4>
+
+  <form method="post" class="card p-4 shadow-sm" id="attendance-form">{% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Date</label>
+      {{ form.date }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Check In Time (24hr)</label>
+      {{ form.check_in }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Check Out Time (24hr)</label>
+      {{ form.check_out }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Status</label>
+      {{ form.status }}
+    </div>
+    <div class="form-check mb-3">
+      {{ form.is_overtime_manual }}
+      <label class="form-check-label ms-2">Did you work overtime?</label>
+    </div>
+    <div class="mb-3" id="overtime-hours-field" style="display: none;">
+      <label class="form-label">Overtime Hours</label>
+      {{ form.overtime_hours }}
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Submit Attendance</button>
+  </form>
+</div>
+
+<script>
+  const overtimeCheckbox = document.getElementById("id_is_overtime_manual");
+  const overtimeField = document.getElementById("overtime-hours-field");
+
+  function toggleOvertimeField() {
+    overtimeField.style.display = overtimeCheckbox.checked ? "block" : "none";
+  }
+
+  if (overtimeCheckbox) {
+    overtimeCheckbox.addEventListener("change", toggleOvertimeField);
+    toggleOvertimeField(); // initialize on page load
+  }
+</script>
+{% endblock %}

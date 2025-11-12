@@ -21,9 +21,23 @@
       <td>{{ record.check_out|default:"-" }}</td>
       <td>{{ record.status }}</td>
       <td>{{ record.work_hours }}</td>
+<<<<<<< HEAD
       <td>{% if record.is_overtime %}Yes{% else %}No{% endif %}</td>
       <td>
         {% if record.status != 'Regularized' %}
+=======
+      <td>
+        {% if record.is_overtime_manual %}
+          {{ record.overtime_hours }} hrs
+        {% elif record.is_overtime %}
+          Auto: {{ record.work_hours|floatformat:2 }} hrs
+        {% else %}
+          No
+        {% endif %}
+      </td>
+      <td>
+        {% if record.status != 'Regularized' and record.id %}
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
           <a href="{% url 'attendance:request_regularization' record.id %}" class="btn btn-sm btn-outline-secondary">Regularize</a>
         {% endif %}
       </td>

@@ -4,7 +4,11 @@ from . import views
 app_name = 'attendance'
 
 urlpatterns = [
+<<<<<<< HEAD
     path('mark/', views.mark_attendance, name='mark_attendance'),
+=======
+    path('mark-form/', views.mark_attendance_form, name='mark_attendance_form'),
+>>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
     path('view/', views.view_attendance, name='view_attendance'),
     path('summary/', views.monthly_summary, name='monthly_summary'),
     path('regularize/<int:attendance_id>/', views.request_regularization, name='request_regularization'),
