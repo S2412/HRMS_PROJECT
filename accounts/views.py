@@ -9,6 +9,7 @@ from .utils import generate_otp, send_otp_email
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 
 
 def signup_view(request):
@@ -99,7 +100,7 @@ def verify_login_otp(request):
 def logout_view(request):
     logout(request)
     messages.info(request, "Logged out successfully.")
-    return redirect('accounts:login')
+    return redirect('accounts:signup')
 
 def hr_dashboard(request):
     if not request.user.is_authenticated or request.user.role != 'HR_ADMIN':
@@ -118,7 +119,7 @@ def change_password(request):
         form.save()
         update_session_auth_hash(request, form.user)  # Prevent logout
         messages.success(request, "Password changed successfully.")
-        return redirect('accounts:login')
+        return redirect('login')
     return render(request, 'accounts/change_password.html', {'form': form})
 
 
