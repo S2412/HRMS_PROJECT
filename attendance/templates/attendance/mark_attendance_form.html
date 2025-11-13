@@ -2,47 +2,59 @@
 {% block content %}
 <div class="container mt-4">
   <h4 class="mb-4 text-center">Manual Attendance Form</h4>
-
-  <form method="post" class="card p-4 shadow-sm" id="attendance-form">{% csrf_token %}
+  <form method="post" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    {{ form.employee }}
     <div class="mb-3">
       <label class="form-label">Date</label>
       {{ form.date }}
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Check In Time (24hr)</label>
-      {{ form.check_in }}
+      <label class="form-label">Check-In Time</label>
+      <div class="d-flex gap-2">
+        <select name="check_in_hour" class="form-select" required>
+          {% for h in hours %}<option value="{{ h }}">{{ h }}</option>{% endfor %}
+        </select>
+        <select name="check_in_minute" class="form-select" required>
+          {% for m in minutes %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
+        </select>
+        <select name="check_in_ampm" class="form-select" required>
+          <option value="AM">AM</option><option value="PM">PM</option>
+        </select>
+      </div>
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Check Out Time (24hr)</label>
-      {{ form.check_out }}
+      <label class="form-label">Check-Out Time</label>
+      <div class="d-flex gap-2">
+        <select name="check_out_hour" class="form-select" required>
+          {% for h in hours %}<option value="{{ h }}">{{ h }}</option>{% endfor %}
+        </select>
+        <select name="check_out_minute" class="form-select" required>
+          {% for m in minutes %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
+        </select>
+        <select name="check_out_ampm" class="form-select" required>
+          <option value="AM">AM</option><option value="PM">PM</option>
+        </select>
+      </div>
     </div>
+
     <div class="mb-3">
       <label class="form-label">Status</label>
       {{ form.status }}
     </div>
+
     <div class="form-check mb-3">
-      {{ form.is_overtime_manual }}
-      <label class="form-check-label ms-2">Did you work overtime?</label>
+      {{ form.is_overtime_manual }} <label class="form-check-label ms-2">Worked Overtime?</label>
     </div>
-    <div class="mb-3" id="overtime-hours-field" style="display: none;">
+
+    <div class="mb-3">
       <label class="form-label">Overtime Hours</label>
       {{ form.overtime_hours }}
     </div>
+
     <button type="submit" class="btn btn-primary w-100">Submit Attendance</button>
   </form>
 </div>
-
-<script>
-  const overtimeCheckbox = document.getElementById("id_is_overtime_manual");
-  const overtimeField = document.getElementById("overtime-hours-field");
-
-  function toggleOvertimeField() {
-    overtimeField.style.display = overtimeCheckbox.checked ? "block" : "none";
-  }
-
-  if (overtimeCheckbox) {
-    overtimeCheckbox.addEventListener("change", toggleOvertimeField);
-    toggleOvertimeField(); // initialize on page load
-  }
-</script>
 {% endblock %}

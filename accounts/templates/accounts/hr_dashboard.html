@@ -1,11 +1,14 @@
 {% extends 'attendance/base.html' %}
 {% block content %}
-<h3 class="text-center mb-4">HR Dashboard</h3>
-<div class="row">
-  <div class="col-md-6">
-    <a href="{% url 'attendance:hr_approval_list' %}" class="btn btn-warning w-100 mb-3">Pending Regularization Requests</a>
-    <a href="{% url 'attendance:monthly_summary' %}" class="btn btn-outline-secondary w-100 mb-3">Monthly Summary</a>
-    <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-success w-100 mb-3">Export CSV</a>
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">HR Dashboard</h4>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <a href="{% url 'attendance:hr_approval_list' %}" class="btn btn-warning w-100">View Regularization Requests</a>
+    </div>
+    <div class="col-md-6 mb-3">
+      <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-dark w-100">Export All Attendance</a>
+    </div>
   </div>
 </div>
 {% endblock %}

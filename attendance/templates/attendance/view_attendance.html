@@ -1,42 +1,67 @@
 {% extends 'attendance/base.html' %}
 {% block content %}
-<h2>Your Attendance Records</h2>
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Check In</th>
-      <th>Check Out</th>
-      <th>Status</th>
-      <th>Work Hours</th>
-      <th>Overtime</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for record in records %}
-    <tr>
-      <td>{{ record.date }}</td>
-      <td>{{ record.check_in|default:"-" }}</td>
-      <td>{{ record.check_out|default:"-" }}</td>
-      <td>{{ record.status }}</td>
-      <td>{{ record.work_hours }}</td>
-      <td>
-        {% if record.is_overtime_manual %}
-          {{ record.overtime_hours }} (Manual)
-        {% elif record.work_hours > 8 %}
-          {{ record.work_hours|floatformat:2 }} (Auto)
-        {% else %}
-          No
-        {% endif %}
-      </td>
-      <td>
-        
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="7" class="text-center">No records found.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">Attendance Records for {{ employee_name }}</h4>
+
+  {% if request.user.is_staff or request.user.is_superuser %}
+    <div class="mb-4">
+      <label class="form-label">Select Employee</label>
+      <select id="employee-selector" class="form-select">
+        <option value="">-- Choose Employee --</option>
+        {% for user in all_users %}
+          <option value="{{ user.username }}" {% if user.username == employee_name %}selected{% endif %}>
+            {{ user.get_full_name|default:user.username }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  {% endif %}
+
+  {% if records %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+          <tr>
+            <th>Date</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Status</th>
+            <th>Overtime</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in records %}
+            <tr>
+              <td>{{ record.date|date:"d M Y" }}</td>
+              <td>{{ record.check_in|time:"h:i A" }}</td>
+              <td>{{ record.check_out|time:"h:i A" }}</td>
+              <td>{{ record.status }}</td>
+              <td>
+                {% if record.is_overtime_manual %}
+                  {{ record.overtime_hours }} hrs
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">No attendance records found.</div>
+  {% endif %}
+</div>
+
+<script>
+  const selector = document.getElementById("employee-selector");
+  if (selector) {
+    selector.addEventListener("change", function () {
+      const username = this.value;
+      if (username) {
+        window.location.href = `?username=${username}`;
+      }
+    });
+  }
+</script>
 {% endblock %}

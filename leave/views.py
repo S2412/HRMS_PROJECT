@@ -1,8 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
+<<<<<<< HEAD
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
+=======
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+>>>>>>> c9590ad3056f752fdb52e31082e9d3d99b03e3af
 from .models import LeaveRequest
 from .forms import LeaveRequestForm
 
@@ -12,6 +17,7 @@ def home(request):
 
 # ✅ List of leave requests for the logged-in user
 @login_required
+<<<<<<< HEAD
 def leave_list(request):
     leaves = LeaveRequest.objects.filter(employee=request.user)
     return render(request, 'leave/list.html', {'leaves': leaves})
@@ -21,14 +27,54 @@ def leave_list(request):
 def leave_apply(request):
     form = LeaveRequestForm(request.POST or None)
     if form.is_valid():
+=======
+def apply_leave(request):
+    form = LeaveRequestForm(request.POST or None, request.FILES or None)
+    if request.method == 'POST' and form.is_valid():
+>>>>>>> c9590ad3056f752fdb52e31082e9d3d99b03e3af
         leave = form.save(commit=False)
         leave.employee = request.user
+        leave.full_clean()
         leave.save()
+<<<<<<< HEAD
         return redirect('leave_list')  # Ensure this matches your URL name
     return render(request, 'leave/form.html', {'form': form})
+=======
+        messages.success(request, "Leave request submitted successfully.")
+        return redirect('leave:view_leave_history')
+    return render(request, 'leave/apply_leave.html', {'form': form})
+>>>>>>> c9590ad3056f752fdb52e31082e9d3d99b03e3af
 
 # ✅ Detail view for a specific leave request
 @login_required
-def leave_detail(request, pk):
-    leave = get_object_or_404(LeaveRequest, pk=pk, employee=request.user)
-    return render(request, 'leave/detail.html', {'leave': leave})
+def view_leave_history(request):
+    leaves = LeaveRequest.objects.filter(employee=request.user).order_by('-applied_on')
+    employee_name = request.user.get_full_name() or request.user.username
+    return render(request, 'leave/view_leave_history.html', {
+        'leaves': leaves,
+        'employee_name': employee_name
+    })
+
+@login_required
+def cancel_leave(request, leave_id):
+    leave = get_object_or_404(LeaveRequest, leave_id=leave_id, employee=request.user)
+    if leave.status == 'Pending':
+        leave.status = 'Cancelled'
+        leave.save()
+        messages.info(request, "Leave request cancelled.")
+    return redirect('leave:view_leave_history')
+
+@login_required
+def admin_leave_list(request):
+    if request.user.role != 'HR_ADMIN':
+        return redirect('accounts:login')
+    leaves = LeaveRequest.objects.all().order_by('-applied_on')
+    return render(request, 'leave/admin_leave_list.html', {'leaves': leaves})
+
+@login_required
+def approve_leave(request, leave_id):
+    leave = get_object_or_404(LeaveRequest, leave_id=leave_id)
+    leave.status = 'Approved'
+    leave.save()
+    messages.success(request, "Leave approved.")
+    return redirect('leave:admin_leave_list')

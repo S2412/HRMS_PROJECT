@@ -9,7 +9,7 @@ urlpatterns = [
     path('signup/', signup_view, name='signup'),
     path('verify-signup-otp/', verify_signup_otp, name='verify_signup_otp'),
   path('login/', views.login_view, name='login'),
-
+   
     path('verify-login-otp/', verify_login_otp, name='verify_login_otp'),
     path('logout/', logout_view, name='logout'),
     path('hr-dashboard/', hr_dashboard, name='hr_dashboard'),

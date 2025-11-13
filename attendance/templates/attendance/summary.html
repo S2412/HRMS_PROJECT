@@ -1,0 +1,14 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">Attendance Summary</h4>
+  <ul class="list-group">
+    <li class="list-group-item">Total Days: {{ total_days }}</li>
+    <li class="list-group-item">Present Days: {{ present_days }}</li>
+    <li class="list-group-item">Late Marks: {{ late_days }}</li>
+    <li class="list-group-item">Early Leaves: {{ early_leave_days }}</li>
+    <li class="list-group-item">Holidays: {{ holidays }}</li>
+    <li class="list-group-item">Total Overtime: {{ total_overtime }} hrs</li>
+  </ul>
+</div>
+{% endblock %}
