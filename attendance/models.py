@@ -19,12 +19,11 @@ class Attendance(models.Model):
     check_in = models.TimeField(null=True, blank=True)
     check_out = models.TimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-<<<<<<< HEAD
-=======
+
+
     is_overtime_manual = models.BooleanField(default=False)
     overtime_hours = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
 
->>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
 
     def work_hours(self):
         if self.check_in and self.check_out:

@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-# attendance/admin.py
-from django.contrib import admin
-from .models import Attendance, RegularizationRequest, Holiday
-
-admin.site.register(Attendance)
-admin.site.register(RegularizationRequest)
-admin.site.register(Holiday)
-=======
 from django.contrib import admin
 from .models import Attendance, RegularizationRequest, Holiday
 
@@ -24,4 +15,3 @@ class RegularizationRequestAdmin(admin.ModelAdmin):
 class HolidayAdmin(admin.ModelAdmin):
     list_display = ('name', 'date')
     list_filter = ('date',)
->>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
