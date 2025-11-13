@@ -1,0 +1,34 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">Monthly Attendance</h4>
+  <table class="table table-bordered table-striped">
+    <thead class="table-primary">
+      <tr>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Check-In</th>
+        <th>Check-Out</th>
+        <th>Overtime</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in records %}
+        <tr>
+          <td>{{ record.date|date:"d M Y" }}</td>
+          <td>{{ record.status }}</td>
+          <td>{{ record.check_in|time:"h:i A" }}</td>
+          <td>{{ record.check_out|time:"h:i A" }}</td>
+          <td>
+            {% if record.is_overtime_manual %}
+              {{ record.overtime_hours }} hrs
+            {% else %}
+              —
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

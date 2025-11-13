@@ -1,52 +1,41 @@
+from django.conf import settings
 from django.db import models
-from django.utils import timezone
-from datetime import datetime, date
-from accounts.models import CustomUser
+from datetime import time, timedelta
 
 class Attendance(models.Model):
-    STATUS_CHOICES = (
-        ('Present', 'Present'),
-        ('Absent', 'Absent'),
-        ('Late', 'Late'),
-        ('Early Leave', 'Early Leave'),
-        ('Weekend', 'Weekend'),
-        ('Holiday', 'Holiday'),
-        ('Regularized', 'Regularized'),
-    )
-    attendance_id = models.AutoField(primary_key=True)
-    employee = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    date = models.DateField(default=timezone.now)
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField()
     check_in = models.TimeField(null=True, blank=True)
     check_out = models.TimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-
-
+    status = models.CharField(max_length=20, choices=[
+        ('Present', 'Present'),
+        ('Late', 'Late'),
+        ('Early Leave', 'Early Leave'),
+        ('Holiday', 'Holiday'),
+        ('Absent', 'Absent'),
+    ])
     is_overtime_manual = models.BooleanField(default=False)
     overtime_hours = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
 
-
-    def work_hours(self):
+    def work_duration(self):
         if self.check_in and self.check_out:
-            delta = datetime.combine(date.min, self.check_out) - datetime.combine(date.min, self.check_in)
-            return round(delta.total_seconds() / 3600, 2)
-        return 0
-
-    def is_overtime(self):
-        return self.work_hours() > 8
-
-    def __str__(self):
-        return f"{self.employee.email} - {self.date} ({self.status})"
-
-class RegularizationRequest(models.Model):
-    employee = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE)
-    reason = models.TextField()
-    requested_at = models.DateTimeField(auto_now_add=True)
-    approved = models.BooleanField(default=False)
+            in_minutes = self.check_in.hour * 60 + self.check_in.minute
+            out_minutes = self.check_out.hour * 60 + self.check_out.minute
+            return timedelta(minutes=out_minutes - in_minutes)
+        return None
 
 class Holiday(models.Model):
-    name = models.CharField(max_length=100)
     date = models.DateField(unique=True)
+    name = models.CharField(max_length=100)
 
-    def __str__(self):
-        return f"{self.name} ({self.date})"
+from django.utils import timezone
+
+class RegularizationRequest(models.Model):
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)  # ✅ Add default here
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=[
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ], default='Pending')

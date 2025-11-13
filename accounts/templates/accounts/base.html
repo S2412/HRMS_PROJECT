@@ -33,6 +33,24 @@
                             <li><a class="dropdown-item" href="{% url 'accounts:hr_dashboard' %}">HR Dashboard</a></li>
                             <li><a class="dropdown-item" href="{% url 'accounts:employee_dashboard' %}">Employee Dashboard</a></li>
                         </ul>
+                        <!-- ✅ Attendance Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-calendar-check"></i> Attendance
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'attendance:mark_attendance' %}">Auto Mark</a></li>
+              <li><a class="dropdown-item" href="{% url 'attendance:mark_attendance_form' %}">Manual Mark</a></li>
+              <li><a class="dropdown-item" href="{% url 'attendance:view_attendance' %}">View Attendance</a></li>
+              <li><a class="dropdown-item" href="{% url 'attendance:monthly_attendance' %}">Monthly Summary</a></li>
+              <li><a class="dropdown-item" href="{% url 'attendance:attendance_summary' %}">Summary</a></li>
+              <li><a class="dropdown-item" href="{% url 'attendance:regularize' %}">Regularization</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
                     </li>
                 </ul>
             </div>

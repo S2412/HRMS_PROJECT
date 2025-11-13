@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HRMS System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'attendance:dashboard' %}">HRMS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <!-- Attendance Links -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'attendance:mark_attendance' %}">Mark Attendance</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'attendance:mark_attendance_form' %}">Manual Attendance</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'attendance:view_attendance' %}">View Attendance</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'attendance:monthly_summary' %}">Monthly Summary</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'attendance:export_attendance_csv' %}">Export CSV</a>
+          </li>
+          {% if user.is_authenticated and user.role == 'HR_ADMIN' %}
+          <li class="nav-item">
+            <a class="nav-link text-warning" href="{% url 'attendance:hr_approval_list' %}">HR Approvals</a>
+          </li>
+          {% endif %}
+
+          <!-- Leave Management Links -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'leave:apply_leave' %}">Apply Leave</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'leave:view_leave_history' %}">Leave History</a>
+          </li>
+          {% if user.is_authenticated and user.role == 'HR_ADMIN' %}
+          <li class="nav-item">
+            <a class="nav-link text-warning" href="{% url 'leave:admin_leave_list' %}">Leave Approvals</a>
+          </li>
+          {% endif %}
+        </ul>
+
+        <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

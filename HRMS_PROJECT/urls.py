@@ -19,15 +19,10 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-      path('attendance/', include('attendance.urls')),
-<<<<<<< HEAD
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+
+     path('attendance/', include(('attendance.urls', 'attendance'), namespace='attendance')),
        path('leave/', include('leave.urls'))
-=======
-    path('', include('accounts.urls')),
-
-
->>>>>>> 60973739d49a2ce42ae60b60944d032550f240eb
 
 
 
