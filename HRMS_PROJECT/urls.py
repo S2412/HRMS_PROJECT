@@ -21,9 +21,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
       path('attendance/', include('attendance.urls')),
+<<<<<<< HEAD
+       path('leave/', include('leave.urls'))
+=======
     path('', include('accounts.urls')),
 
 
+>>>>>>> 60973739d49a2ce42ae60b60944d032550f240eb
 
 
 
