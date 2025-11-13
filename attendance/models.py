@@ -20,6 +20,11 @@ class Attendance(models.Model):
     check_out = models.TimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
 
+
+    is_overtime_manual = models.BooleanField(default=False)
+    overtime_hours = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+
+
     def work_hours(self):
         if self.check_in and self.check_out:
             delta = datetime.combine(date.min, self.check_out) - datetime.combine(date.min, self.check_in)
