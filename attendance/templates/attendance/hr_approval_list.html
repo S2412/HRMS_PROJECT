@@ -1,26 +1,42 @@
 {% extends 'attendance/base.html' %}
 {% block content %}
-<h4 class="text-center mb-4">Pending Regularization Requests</h4>
-<table class="table table-bordered">
-  <thead class="table-primary">
-    <tr>
-      <th>Employee</th>
-      <th>Date</th>
-      <th>Reason</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for req in requests %}
-    <tr>
-      <td>{{ req.employee.email }}</td>
-      <td>{{ req.attendance.date }}</td>
-      <td>{{ req.reason }}</td>
-      <td>
-        <a href="{% url 'attendance:approve_request' req.id %}" class="btn btn-success btn-sm">Approve</a>
-      </td>
-    </trS>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">Pending Regularization Requests ({{ requests|length }})</h4>
+
+  {% if requests %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Date</th>
+          <th>Reason</th>
+          <th>Requested At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for req in requests %}
+        <tr>
+          <td>{{ req.employee.email }}</td>
+          <td>{{ req.attendance.date }}</td>
+          <td>{{ req.reason }}</td>
+          <td>{{ req.requested_at|date:"M d, Y H:i" }}</td>
+          <td>
+            <form method="post" action="{% url 'attendance:approve_request' req.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success btn-sm">Approve</button>
+            </form>
+            <form method="post" action="{% url 'attendance:reject_request' req.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm ms-2">Reject</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info text-center">No pending requests for this month.</div>
+  {% endif %}
+</div>
 {% endblock %}

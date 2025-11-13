@@ -1,15 +1,20 @@
 {% extends 'attendance/base.html' %}
 {% block content %}
-<h3 class="text-center mb-4">Welcome, {{ request.user.email }}</h3>
-<div class="row">
-  <div class="col-md-6">
-<<<<<<< HEAD
-    <a href="{% url 'attendance:mark_attendance' %}" class="btn btn-primary w-100 mb-3">Mark Attendance</a>
-=======
-    <a href="{% url 'attendance:mark_attendance_form' %}" class="btn btn-primary w-100 mb-3">Mark Attendance</a>
->>>>>>> 4074bba (Added manual attendance form with overtime and status dropdown)
-    <a href="{% url 'attendance:view_attendance' %}" class="btn btn-outline-primary w-100 mb-3">View Records</a>
-    <a href="{% url 'attendance:monthly_summary' %}" class="btn btn-outline-secondary w-100 mb-3">Monthly Summary</a>
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">Employee Dashboard</h4>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <a href="{% url 'attendance:view_attendance' %}" class="btn btn-outline-primary w-100">View Attendance</a>
+    </div>
+    <div class="col-md-6 mb-3">
+      <a href="{% url 'attendance:mark_attendance_form' %}" class="btn btn-outline-success w-100">Mark Attendance</a>
+    </div>
+    <div class="col-md-6 mb-3">
+      <a href="{% url 'attendance:monthly_summary' %}" class="btn btn-outline-info w-100">Monthly Summary</a>
+    </div>
+    <div class="col-md-6 mb-3">
+      <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-dark w-100">Export CSV</a>
+    </div>
   </div>
 </div>
 {% endblock %}

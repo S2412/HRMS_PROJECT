@@ -3,36 +3,92 @@
 <div class="container mt-4">
   <h4 class="mb-4 text-center">Manual Attendance Form</h4>
 
-  <form method="post" class="card p-4 shadow-sm" id="attendance-form">{% csrf_token %}
+  <!-- Live Clock Display -->
+  <div class="mb-3 text-center">
+    <label class="form-label fw-bold">Current Time</label>
+    <div id="live-clock" class="fs-5 text-primary"></div>
+  </div>
+
+  <form method="post" class="card p-4 shadow-sm" id="attendance-form">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label">Employee</label>
+      {{ form.employee_info }}
+    </div>
+
     <div class="mb-3">
       <label class="form-label">Date</label>
       {{ form.date }}
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Check In Time (24hr)</label>
-      {{ form.check_in }}
+      <label class="form-label">Check In Time</label>
+      <input type="time" name="check_in" class="form-control" id="id_check_in" required>
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Check Out Time (24hr)</label>
-      {{ form.check_out }}
+      <label class="form-label">Check Out Time</label>
+      <input type="time" name="check_out" class="form-control" id="id_check_out" required>
     </div>
+
     <div class="mb-3">
       <label class="form-label">Status</label>
       {{ form.status }}
     </div>
+
     <div class="form-check mb-3">
       {{ form.is_overtime_manual }}
       <label class="form-check-label ms-2">Did you work overtime?</label>
     </div>
+
     <div class="mb-3" id="overtime-hours-field" style="display: none;">
       <label class="form-label">Overtime Hours</label>
       {{ form.overtime_hours }}
     </div>
+
     <button type="submit" class="btn btn-primary w-100">Submit Attendance</button>
   </form>
 </div>
 
+<!-- Clock Styling -->
+<style>
+  #live-clock {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #f8f9fa;
+    padding: 8px 16px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+</style>
+
+<!-- JavaScript for Clock and Overtime Toggle -->
 <script>
+  // Live Clock
+  function updateClock() {
+    const now = new Date();
+    const clock = document.getElementById("live-clock");
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    clock.textContent = `${hours}:${minutes}:${seconds}`;
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Autofill check-in/out on focus
+  document.getElementById("id_check_in").addEventListener("focus", function () {
+    const now = new Date();
+    this.value = now.toTimeString().slice(0, 5);
+  });
+
+  document.getElementById("id_check_out").addEventListener("focus", function () {
+    const now = new Date();
+    this.value = now.toTimeString().slice(0, 5);
+  });
+
+  // Overtime toggle
   const overtimeCheckbox = document.getElementById("id_is_overtime_manual");
   const overtimeField = document.getElementById("overtime-hours-field");
 
@@ -42,7 +98,7 @@
 
   if (overtimeCheckbox) {
     overtimeCheckbox.addEventListener("change", toggleOvertimeField);
-    toggleOvertimeField(); // initialize on page load
+    toggleOvertimeField();
   }
 </script>
 {% endblock %}

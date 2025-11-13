@@ -5,10 +5,11 @@ from django.utils import timezone
 from django.http import HttpResponse
 from datetime import datetime, time, date
 from django.db.models import Count
+from django.views.decorators.http import require_POST
 import csv
 
 from .models import Attendance, RegularizationRequest, Holiday
-from .forms import AttendanceForm, RegularizationForm
+from .forms import AttendanceForm, RegularizationRequestForm
 
 # Thresholds
 LATE_THRESHOLD = time(9, 30)
@@ -72,8 +73,11 @@ def mark_attendance_form(request):
 @login_required
 def view_attendance(request):
     records = Attendance.objects.filter(employee=request.user).order_by('-date')
-    return render(request, 'attendance/view_attendance.html', {'records': records})
-
+    employee_name = request.user.get_full_name() or request.user.username  # fallback if full name isn't set
+    return render(request, 'attendance/view_attendance.html', {
+        'records': records,
+        'employee_name': employee_name
+    })
 # 📊 Monthly Summary
 @login_required
 def monthly_summary(request):
@@ -108,16 +112,22 @@ def request_regularization(request, attendance_id):
         'attendance': attendance
     })
 
-# ✅ HR Approval List
+# ✅ HR Approval List (filtered by current month)
 @login_required
 def hr_approval_list(request):
     if request.user.role != 'HR_ADMIN':
         return redirect('attendance:view_attendance')
 
-    requests = RegularizationRequest.objects.filter(approved=False)
+    today = date.today()
+    requests = RegularizationRequest.objects.filter(
+        approved=False,
+        requested_at__month=today.month,
+        requested_at__year=today.year
+    )
     return render(request, 'attendance/hr_approval_list.html', {'requests': requests})
 
 # ✅ Approve Regularization Request
+@require_POST
 @login_required
 def approve_request(request, request_id):
     req = get_object_or_404(RegularizationRequest, id=request_id)
@@ -126,6 +136,17 @@ def approve_request(request, request_id):
     req.attendance.save()
     req.save()
     messages.success(request, "Request approved.")
+    return redirect('attendance:hr_approval_list')
+
+# ❌ Reject Regularization Request
+@require_POST
+@login_required
+def reject_request(request, request_id):
+    req = get_object_or_404(RegularizationRequest, id=request_id)
+    req.attendance.status = 'Absent'  # or keep original
+    req.attendance.save()
+    req.delete()  # or mark as rejected if you want to track it
+    messages.warning(request, "Request rejected.")
     return redirect('attendance:hr_approval_list')
 
 # 📤 Export Attendance to CSV
@@ -145,6 +166,25 @@ def export_attendance_csv(request):
 # 🧭 Role-Based Dashboard
 @login_required
 def dashboard(request):
-    if request.user.role == 'HR_ADMIN':
-        return render(request, 'attendance/hr_dashboard.html')
-    return render(request, 'attendance/employee_dashboard.html')
+    return render(request, 'accounts/emplodashboard.html')
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import RegularizationRequestForm
+from .models import Attendance, RegularizationRequest
+
+def send_regularization_request(request, attendance_id):
+    attendance = get_object_or_404(Attendance, id=attendance_id)
+
+    if request.method == 'POST':
+        form = RegularizationRequestForm(request.POST)
+        if form.is_valid():
+            reg_request = form.save(commit=False)
+            reg_request.employee = request.user
+            reg_request.attendance = attendance
+            reg_request.save()
+            return redirect('employee_dashboard')  # or wherever you want to redirect
+    else:
+        form = RegularizationRequestForm(initial={'attendance': attendance})
+
+    return render(request, 'attendance/send_request.html', {'form': form, 'attendance': attendance})

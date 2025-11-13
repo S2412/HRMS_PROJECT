@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -57,7 +57,8 @@ ROOT_URLCONF = 'HRMS_PROJECT.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR  / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,8 +127,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/employee-dashboard/'  # or '/hr-dashboard/' based on role
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = '/accounts/dashboard/employee/'  # or use a custom redirect view # or '/hr-dashboard/' based on role
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
