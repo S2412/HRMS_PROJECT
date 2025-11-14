@@ -1,0 +1,97 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center mb-3">HRMS Dashboard</h2>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5>Welcome, {{ request.user.first_name }}</h5>
+    <a href="{% url 'accounts:profile' %}" class="btn btn-primary">View My Profile</a>
+  </div>
+
+  <!-- Overview Stats -->
+  <div class="row mb-4">
+    <div class="col-md-4"><div class="alert alert-secondary">Total Employees: <strong>120</strong></div></div>
+    <div class="col-md-4"><div class="alert alert-info">Active Projects: <strong>15</strong></div></div>
+    <div class="col-md-4"><div class="alert alert-warning">Pending Leave Requests: <strong>3</strong></div></div>
+  </div>
+
+  <!-- Employee Management -->
+  <div class="card mb-4">
+    <div class="card-header fw-bold">Employee Management</div>
+    <div class="card-body">
+      <p>112 Active • 5 On Leave • 3 Resigned</p>
+      <div class="d-grid gap-2 d-md-flex">
+        <a href="{% url 'employee:view_all' %}" class="btn btn-outline-dark">View All Employees</a>
+        <a href="{% url 'employee:add' %}" class="btn btn-outline-success">Add New Employee</a>
+        <a href="{% url 'employee:update' %}" class="btn btn-outline-primary">Update Employee Info</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance -->
+  <div class="card mb-4">
+    <div class="card-header fw-bold">Attendance</div>
+    <div class="card-body">
+      <p><i class="bi bi-check-circle-fill text-success"></i> Marked Present</p>
+      <div class="d-grid gap-2 d-md-flex">
+        <a href="{% url 'attendance:view_attendance' %}" class="btn btn-outline-info">View Attendance</a>
+        <a href="{% url 'attendance:monthly_attendance' %}" class="btn btn-outline-secondary">Monthly Summary</a>
+        <a href="{% url 'attendance:mark_attendance_form' %}" class="btn btn-outline-success">Mark Attendance</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects & Mapping -->
+  <div class="card mb-4">
+    <div class="card-header fw-bold">Projects & Employee Mapping</div>
+    <div class="card-body">
+      <p>Projects: 15 Active • 3 On Track<br>Mapping: 85 Assigned</p>
+      <div class="d-grid gap-2 d-md-flex">
+        <a href="{% url 'project:project_list' %}" class="btn btn-outline-dark">Manage All Projects</a>
+        <a href="{% url 'project:add_project' %}" class="btn btn-outline-success">Add New Project</a>
+        <a href="{% url 'project:mapping_list' %}" class="btn btn-outline-primary">View Employee Mapping</a>
+        <a href="{% url 'project:assign_employee' %}" class="btn btn-outline-warning">Assign Employee to Project</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HR Analytics -->
+  <div class="card mb-4">
+    <div class="card-header fw-bold">HR Analytics</div>
+    <div class="card-body">
+      <ul class="list-group list-group-flush mb-3">
+        <li class="list-group-item">50% Active Headcount <span class="text-success">↑</span></li>
+        <li class="list-group-item">5% Attrition Rate <span class="text-danger">↓</span></li>
+        <li class="list-group-item">80% Leave Utilization <span class="text-warning">↑</span></li>
+        <li class="list-group-item">30% HR Headcount <i class="bi bi-bar-chart-fill text-primary"></i></li>
+      </ul>
+      <div class="d-grid gap-2 d-md-flex">
+        <a href="{% url 'analytics:report' %}" class="btn btn-outline-dark">View Full Report</a>
+        <a href="{% url 'analytics:attrition' %}" class="btn btn-outline-danger">Analyze Attrition</a>
+        <a href="{% url 'analytics:department' %}" class="btn btn-outline-info">Departmental Distribution</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recruitment & Learning -->
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header fw-bold">Recruitment</div>
+        <div class="card-body">
+          <p>5 Open Positions</p>
+          <a href="{% url 'recruitment:jobs' %}" class="btn btn-outline-primary">View All Jobs</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header fw-bold">Learning & Development</div>
+        <div class="card-body">
+          <p>3 Upcoming Sessions</p>
+          <a href="{% url 'training:programs' %}" class="btn btn-outline-secondary">View Training Programs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

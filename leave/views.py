@@ -56,12 +56,12 @@ def admin_leave_list(request):
 
 @login_required
 def approve_leave(request, leave_id):
-    leave = get_object_or_404(LeaveRequest, leave_id=leave_id)
+    leave = get_object_or_404(leave, pk=leave_id)
     leave.status = 'Approved'
     leave.save()
     messages.success(request, "Leave approved.")
-    return redirect('leave:admin_leave_list')
+    return redirect('leave:leave_list')  # or 'leave:admin_leave_list' if defined
 
 def leave_detail(request, pk):
-    leave = get_object_or_404(Leave, pk=pk)
+    leave = get_object_or_404(leave, pk=pk)
     return render(request, 'leave/leave_detail.html', {'leave': leave})

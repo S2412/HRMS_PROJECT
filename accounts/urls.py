@@ -6,9 +6,13 @@ from . import views
 
 
 urlpatterns = [
+    
+
     path('signup/', signup_view, name='signup'),
     path('verify-signup-otp/', verify_signup_otp, name='verify_signup_otp'),
   path('login/', views.login_view, name='login'),
+  path('profile/', views.profile_view, name='profile'),
+
    
     path('verify-login-otp/', verify_login_otp, name='verify_login_otp'),
     path('logout/', logout_view, name='logout'),

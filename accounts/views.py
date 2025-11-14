@@ -12,6 +12,41 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from employee.models import Employee
+from project_management.models import Project, EmployeeProjectMapping
+from attendance.models import Attendance
+from leave.models import LeaveRequest
+
+
+def hrms_dashboard_view(request):
+    # Basic stats
+    total_employees = Employee.objects.count()
+    active_projects = Project.objects.filter(status='active').count()
+    pending_leaves = LeaveRequest.objects.filter(status='pending').count()
+
+    # Optional: breakdowns
+    active_employees = Employee.objects.filter(status='active').count()
+    on_leave = Attendance.objects.filter(status='leave').count()
+    resigned = Employee.objects.filter(status='resigned').count()
+    assigned_mappings = EmployeeProjectMapping.objects.count()
+
+    context = {
+        'total_employees': total_employees,
+        'active_projects': active_projects,
+        'pending_leaves': pending_leaves,
+        'active_employees': active_employees,
+        'on_leave': on_leave,
+        'resigned': resigned,
+        'assigned_mappings': assigned_mappings,
+    }
+    return render(request, 'accounts/hrms_dashboard.html', context)
+
+@login_required
+def profile_view(request):
+    return render(request, 'accounts/profile.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)

@@ -129,8 +129,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = '/accounts/dashboard/employee/'  # or use a custom redirect view # or '/hr-dashboard/' based on role
+LOGIN_URL = '/accounts/login/'  # ✅ or use a named URL like 'accounts:login'
+LOGIN_REDIRECT_URL = '/hrms_dashboard/'  # or use a custom redirect view # or '/hr-dashboard/' based on role
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

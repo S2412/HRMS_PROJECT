@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-
+from accounts import views
 urlpatterns = [
+   path('', views.hrms_dashboard_view, name='hrms_dashboard'),  # ✅ Root URL
+
     path('admin/', admin.site.urls),
      path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
       path('attendance/', include('attendance.urls')),
