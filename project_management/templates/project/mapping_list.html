@@ -1,0 +1,25 @@
+{% extends 'project/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Project Team Members</h3>
+  <a href="{% url 'project:assign_employee' %}" class="btn btn-primary mb-3">Assign New</a>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Employee ID</th><th>Project</th><th>Role</th><th>Allocation %</th><th>Dates</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mapping in mappings %}
+      <tr>
+        <td>{{ mapping.employee_id }}</td>
+        <td>{{ mapping.project.name }}</td>
+        <td>{{ mapping.role }}</td>
+        <td>{{ mapping.allocation_percentage }}%</td>
+        <td>{{ mapping.assigned_date }} → {{ mapping.release_date|default:"-" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

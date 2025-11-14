@@ -1,0 +1,27 @@
+{% extends 'project/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>All Projects</h3>
+  <a href="{% url 'project:add_project' %}" class="btn btn-primary mb-3">Add New Project</a>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th><th>Status</th><th>Client</th><th>Technology</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td>{{ project.name }}</td>
+        <td>{{ project.status }}</td>
+        <td>{{ project.client_name }}</td>
+        <td>{{ project.technology_used }}</td>
+        <td>
+          <a href="{% url 'project:edit_project' project.pk %}" class="btn btn-sm btn-warning">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

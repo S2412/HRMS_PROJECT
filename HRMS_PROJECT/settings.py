@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'accounts',
     'attendance',
     'leave',
-    'employee'
+    'employee',
+    'project_management'
     
 ]
 

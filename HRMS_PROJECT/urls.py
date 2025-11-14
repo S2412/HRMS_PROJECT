@@ -22,7 +22,9 @@ urlpatterns = [
      path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
       path('attendance/', include('attendance.urls')),
        path('leave/', include('leave.urls')),
-        path('employee/', include('employee.urls'))
+        path('employee/', include('employee.urls')),
+         path('project/', include(('project_management.urls', 'project'), namespace='project')),
+
 
 
 ]
