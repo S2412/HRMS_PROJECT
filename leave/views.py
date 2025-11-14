@@ -1,21 +1,51 @@
 from django.shortcuts import render, redirect, get_object_or_404
+<<<<<<< HEAD
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+
+=======
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+>>>>>>> c9590ad3056f752fdb52e31082e9d3d99b03e3af
 from .models import LeaveRequest
 from .forms import LeaveRequestForm
 
+# ✅ Public homepage view
+def home(request):
+    return HttpResponse("Welcome to the HRMS System!")
+
+# ✅ List of leave requests for the logged-in user
 @login_required
+<<<<<<< HEAD
+def leave_list(request):
+    leaves = LeaveRequest.objects.filter(employee=request.user)
+    return render(request, 'leave/list.html', {'leaves': leaves})
+
+# ✅ Form to apply for leave
+@login_required
+def leave_apply(request):
+    form = LeaveRequestForm(request.POST or None)
+    if form.is_valid():
+=======
 def apply_leave(request):
     form = LeaveRequestForm(request.POST or None, request.FILES or None)
     if request.method == 'POST' and form.is_valid():
+>>>>>>> c9590ad3056f752fdb52e31082e9d3d99b03e3af
         leave = form.save(commit=False)
         leave.employee = request.user
         leave.full_clean()
         leave.save()
+<<<<<<< HEAD
+        return redirect('leave_list')  # Ensure this matches your URL name
+    return render(request, 'leave/form.html', {'form': form})
+=======
         messages.success(request, "Leave request submitted successfully.")
         return redirect('leave:view_leave_history')
     return render(request, 'leave/apply_leave.html', {'form': form})
+>>>>>>> c9590ad3056f752fdb52e31082e9d3d99b03e3af
 
+# ✅ Detail view for a specific leave request
 @login_required
 def view_leave_history(request):
     leaves = LeaveRequest.objects.filter(employee=request.user).order_by('-applied_on')
