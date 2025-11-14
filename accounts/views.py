@@ -75,27 +75,39 @@ def login_view(request):
 def verify_login_otp(request):
     user_id = request.session.get('pending_login_user')
     if not user_id:
-        messages.error(request, "No login attempt in progress.")
+        messages.error(request, "Session expired or no login attempt in progress.")
         return redirect('accounts:login')
+
     user = get_object_or_404(CustomUser, id=user_id)
     form = OTPForm(request.POST or None)
+
     if request.method == 'POST' and form.is_valid():
         otp_code = form.cleaned_data['code']
-        otp_obj = EmailOTP.objects.filter(user=user, code=otp_code, purpose='login', is_used=False).last()
+        otp_obj = EmailOTP.objects.filter(
+            user=user, code=otp_code, purpose='login', is_used=False
+        ).last()
+
         if otp_obj and not otp_obj.expired():
             otp_obj.is_used = True
             otp_obj.save()
+
             login(request, user)
             user.last_login_time = timezone.now()
             user.save()
-            del request.session['pending_login_user']
+
+            request.session.pop('pending_login_user', None)  # ✅ safe deletion
+
             if user.role == 'HR_ADMIN':
                 return redirect('accounts:hr_dashboard')
             else:
                 return redirect('accounts:employee_dashboard')
         else:
             messages.error(request, "Invalid or expired OTP.")
-    return render(request, 'accounts/verify_otp.html', {'form': form, 'email': user.email})
+
+    return render(request, 'accounts/verify_otp.html', {
+        'form': form,
+        'email': user.email
+    })
 
 def logout_view(request):
     logout(request)

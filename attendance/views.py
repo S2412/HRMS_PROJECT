@@ -156,3 +156,18 @@ def attendance_summary(request):
         'holidays': holidays,
         'total_overtime': total_overtime
     })
+import csv
+from django.http import HttpResponse
+from .models import Attendance  # adjust if your model is named differently
+
+def export_attendance_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="attendance.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Employee ID', 'Date', 'Status'])  # adjust headers
+
+    for record in Attendance.objects.all():
+        writer.writerow([record.employee_id, record.date, record.status])  # adjust fields
+
+    return response

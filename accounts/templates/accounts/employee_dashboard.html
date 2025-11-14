@@ -4,16 +4,24 @@
   <h4 class="mb-4 text-center">Employee Dashboard</h4>
   <div class="row">
     <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:view_attendance' %}" class="btn btn-outline-primary w-100">View Attendance</a>
+      <a href="{% url 'attendance:view_attendance' %}" class="btn btn-outline-primary w-100">
+        <i class="bi bi-eye"></i> View Attendance
+      </a>
     </div>
     <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:mark_attendance_form' %}" class="btn btn-outline-success w-100">Mark Attendance</a>
+      <a href="{% url 'attendance:mark_attendance_form' %}" class="btn btn-outline-success w-100">
+        <i class="bi bi-pencil-square"></i> Mark Attendance
+      </a>
     </div>
     <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:monthly_summary' %}" class="btn btn-outline-info w-100">Monthly Summary</a>
+      <a href="{% url 'attendance:monthly_attendance' %}" class="btn btn-outline-info w-100">
+        <i class="bi bi-calendar-month"></i> Monthly Summary
+      </a>
     </div>
     <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-dark w-100">Export CSV</a>
+      <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-dark w-100">
+        <i class="bi bi-file-earmark-arrow-down"></i> Export CSV
+      </a>
     </div>
   </div>
 </div>
