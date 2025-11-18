@@ -22,5 +22,11 @@ urlpatterns = [
     path('forgot-password/', forgot_password_request, name='forgot_password'),
     path('verify-reset-otp/', verify_reset_otp, name='verify_reset_otp'),
     path('reset-password/', reset_password, name='reset_password'),
+    path('profile/', views.profile_view, name='profile'),
 
+    path('employees/', views.employee_list_view, name='employee_list'),
+    path('employees/add/', views.add_employee_view, name='add_employee'),
+    path('employees/<int:pk>/edit/', views.update_employee_view, name='update_employee'),
+    path('employees/<int:pk>/delete/', views.delete_employee_view, name='delete_employee'),
 ]
+

@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, EmployeeProjectMapping
 from .forms import ProjectForm, EmployeeProjectMappingForm
+from django.contrib import messages
 
 def project_list_view(request):
     projects = Project.objects.all()
@@ -20,6 +21,12 @@ def edit_project_view(request, pk):
         form.save()
         return redirect('project:project_list')
     return render(request, 'project/edit_project.html', {'form': form, 'project': project})
+
+def direct_delete_project_view(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    project.delete()
+    return redirect('project:project_list')
+
 
 def assign_employee_view(request):
     form = EmployeeProjectMappingForm(request.POST or None)

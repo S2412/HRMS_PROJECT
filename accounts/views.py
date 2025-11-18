@@ -14,34 +14,57 @@ from django.contrib.auth import get_user_model
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from employee.models import Employee
+
 from project_management.models import Project, EmployeeProjectMapping
 from attendance.models import Attendance
-from leave.models import LeaveRequest
 
 
+@login_required
 def hrms_dashboard_view(request):
-    # Basic stats
-    total_employees = Employee.objects.count()
-    active_projects = Project.objects.filter(status='active').count()
-    pending_leaves = LeaveRequest.objects.filter(status='pending').count()
+    return render(request, 'accounts/hrms_dashboard.html')
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from leave.models import LeaveRequest
+from attendance.models import Attendance
+from project_management.models import EmployeeProjectMapping
 
-    # Optional: breakdowns
-    active_employees = Employee.objects.filter(status='active').count()
-    on_leave = Attendance.objects.filter(status='leave').count()
-    resigned = Employee.objects.filter(status='resigned').count()
-    assigned_mappings = EmployeeProjectMapping.objects.count()
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from leave.models import LeaveRequest
+from attendance.models import Attendance
+from project_management.models import EmployeeProjectMapping
 
-    context = {
-        'total_employees': total_employees,
-        'active_projects': active_projects,
-        'pending_leaves': pending_leaves,
-        'active_employees': active_employees,
-        'on_leave': on_leave,
-        'resigned': resigned,
-        'assigned_mappings': assigned_mappings,
-    }
-    return render(request, 'accounts/hrms_dashboard.html', context)
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from leave.models import LeaveRequest
+from project_management.models import EmployeeProjectMapping
+from attendance.models import Attendance
+from attendance.forms import AttendanceForm
+from leave.forms import LeaveRequestForm  # Make sure you have a form for leave
+
+@login_required
+def employee_dashboard(request):
+    user = request.user
+
+    # Recent attendance (limit 5)
+    attendance = Attendance.objects.filter(employee=user).order_by('-date')[:5]
+
+    # Recent leave requests (limit 5)
+    leaves = LeaveRequest.objects.filter(user=user).order_by('-start_date')[:5]
+
+    # Project assignments
+    projects = EmployeeProjectMapping.objects.filter(employee_id=user.id)
+
+    # Initialize leave form
+    leave_form = LeaveRequestForm()
+
+    return render(request, 'accounts/employee_dashboard.html', {
+        'attendance': attendance,
+        'leaves': leaves,
+        'projects': projects,
+        'leave_form': leave_form,
+    })
+
 
 @login_required
 def profile_view(request):
@@ -149,15 +172,66 @@ def logout_view(request):
     messages.info(request, "Logged out successfully.")
     return redirect('accounts:signup')
 
-def hr_dashboard(request):
-    if not request.user.is_authenticated or request.user.role != 'HR_ADMIN':
-        return redirect('accounts:login')
-    return render(request, 'accounts/hr_dashboard.html')
+from django.shortcuts import render, redirect
+from leave.models import LeaveRequest
+from project_management.models import Project, EmployeeProjectMapping
 
-def employee_dashboard(request):
-    if not request.user.is_authenticated or request.user.role != 'EMPLOYEE':
-        return redirect('accounts:login')
-    return render(request, 'accounts/employee_dashboard.html')
+
+from django.shortcuts import render, redirect
+from leave.models import LeaveRequest
+from project_management.models import Project, EmployeeProjectMapping
+
+from attendance.models import Attendance
+
+from django.utils import timezone
+
+from django.contrib import messages
+from .forms import AddEmployeeForm
+
+from payroll.forms import SalaryComponentForm, EmployeeSalaryForm
+from payroll.models import Payroll, SalaryComponent, EmployeeSalary
+@login_required
+def hr_dashboard(request):
+    today = timezone.now().date()
+
+    # Leave requests
+    leave_requests = LeaveRequest.objects.all()
+
+    # Projects
+    projects = Project.objects.all()
+    mappings = EmployeeProjectMapping.objects.select_related('project')
+
+    # Today's attendance
+    attendance_today = Attendance.objects.select_related('employee').filter(date=today)
+
+    # Employees (added this!)
+    employees = CustomUser.objects.filter(role='EMPLOYEE')
+
+    # Payroll forms
+    salary_component_form = SalaryComponentForm(request.POST or None, prefix="component")
+    employee_salary_form = EmployeeSalaryForm(request.POST or None, prefix="employee_salary")
+
+    # Handle payroll form submissions only
+    if request.method == 'POST':
+        if 'add_component' in request.POST and salary_component_form.is_valid():
+            salary_component_form.save()
+            messages.success(request, "Salary component added successfully!")
+            return redirect('accounts:hr_dashboard')
+
+        if 'assign_salary' in request.POST and employee_salary_form.is_valid():
+            employee_salary_form.save()
+            messages.success(request, "Salary assigned successfully!")
+            return redirect('accounts:hr_dashboard')
+
+    return render(request, "accounts/hr_dashboard.html", {
+        'leave_requests': leave_requests,
+        'projects': projects,
+        'mappings': mappings,
+        'attendance_today': attendance_today,
+        'employees': employees,  # <-- Pass employees to template
+        'salary_component_form': salary_component_form,
+        'employee_salary_form': employee_salary_form,
+    })
 
 @login_required
 def change_password(request):
@@ -222,3 +296,67 @@ def reset_password(request):
         del request.session['verified_reset_user']
         return redirect('accounts:login')
     return render(request, 'accounts/reset_password.html', {'form': form})
+
+
+# accounts/views.py
+from .forms import AddEmployeeForm, UpdateEmployeeForm
+from .models import CustomUser, EmailOTP
+from .utils import generate_otp, send_otp_email
+
+@login_required
+def employee_list_view(request):
+    if request.user.role != 'HR_ADMIN':
+        return redirect('accounts:login')
+    employees = CustomUser.objects.filter(role='EMPLOYEE')
+    return render(request, 'accounts/employee_list.html', {'employees': employees})
+
+@login_required
+def add_employee_view(request):
+    if request.user.role != 'HR_ADMIN':
+        return redirect('accounts:login')
+    form = AddEmployeeForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.save(commit=False)
+        user.role = 'EMPLOYEE'
+        user.is_active = True
+        user.save()
+        otp_code = generate_otp()
+        EmailOTP.objects.create(user=user, code=otp_code, purpose='signup')
+        send_otp_email(user.email, otp_code, purpose='signup')
+        messages.success(request, "Employee added and OTP sent.")
+        return redirect('accounts:employee_list')
+    return render(request, 'accounts/add_employee.html', {'form': form})
+
+@login_required
+def update_employee_view(request, pk):
+    if request.user.role != 'HR_ADMIN':
+        return redirect('accounts:login')
+    employee = get_object_or_404(CustomUser, pk=pk, role='EMPLOYEE')
+    form = UpdateEmployeeForm(request.POST or None, instance=employee)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, "Employee updated.")
+        return redirect('accounts:employee_list')
+    return render(request, 'accounts/update_employee.html', {'form': form})
+
+@login_required
+def delete_employee_view(request, pk):
+    if request.user.role != 'HR_ADMIN':
+        return redirect('accounts:login')
+    employee = get_object_or_404(CustomUser, pk=pk, role='EMPLOYEE')
+    if request.method == 'POST':
+        employee.delete()
+        messages.success(request, "Employee deleted.")
+        return redirect('accounts:employee_list')
+    return render(request, 'accounts/delete_employee.html', {'employee': employee})
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+@login_required
+def profile_view(request):
+    return render(request, 'accounts/profile.html', {
+        'user': request.user
+    })
+
+

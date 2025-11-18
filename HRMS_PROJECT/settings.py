@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'attendance',
+    'project_management',
     'leave',
-    'employee',
-    'project_management'
+    'payroll'
+
+    
+
     
 ]
 
@@ -80,8 +83,12 @@ WSGI_APPLICATION = 'HRMS_PROJECT.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'HRMSDB',
+        'USER': 'postgres',   
+        'PASSWORD': '1234567', 
+        'HOST': 'localhost',
+        'PORT': '5432',      
     }
 }
 
@@ -138,3 +145,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'samruddhiyadav2412@gmail.com'
 EMAIL_HOST_PASSWORD = 'smcclilxkklwxszj'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

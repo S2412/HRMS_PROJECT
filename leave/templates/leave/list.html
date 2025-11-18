@@ -1,9 +1,0 @@
-<h2>My Leave Requests</h2>
-<a href="{% url 'leave_apply' %}" class="btn btn-primary">Apply for Leave</a>
-<ul>
-  {% for leave in leaves %}
-    <li>{{ leave.leave_type }}: {{ leave.start_date }} to {{ leave.end_date }} - {{ leave.status }}
-      <a href="{% url 'leave_detail' leave.id %}">Details</a>
-    </li>
-  {% endfor %}
-</ul>

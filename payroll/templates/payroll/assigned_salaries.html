@@ -1,0 +1,51 @@
+{% extends 'payroll/base.html' %}
+
+{% block title %}Assigned Salaries{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">💼 Assigned Salaries Overview</h2>
+
+{% for data in salary_data %}
+<div class="card">
+    <div class="card-header">
+        {{ data.employee.get_full_name }} ({{ data.employee.email }})
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Type</th>
+                    <th>Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comp in data.components %}
+                <tr>
+                    <td>{{ comp.component.name }}</td>
+                    <td>{{ comp.component.component_type|title }}</td>
+                    <td>{{ comp.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-success">
+                    <th colspan="2">Total Earnings</th>
+                    <th>₹{{ data.total_earnings }}</th>
+                </tr>
+                <tr class="table-danger">
+                    <th colspan="2">Total Deductions</th>
+                    <th>₹{{ data.total_deductions }}</th>
+                </tr>
+                <tr class="table-primary">
+                    <th colspan="2">Net Salary</th>
+                    <th>₹{{ data.total_earnings|floatformat:2|add:"-data.total_deductions"|floatformat:2 }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% empty %}
+<p>No salary assignments found.</p>
+{% endfor %}
+{% endblock %}

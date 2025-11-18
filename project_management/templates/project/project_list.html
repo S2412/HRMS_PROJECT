@@ -18,6 +18,8 @@
         <td>{{ project.technology_used }}</td>
         <td>
           <a href="{% url 'project:edit_project' project.pk %}" class="btn btn-sm btn-warning">Edit</a>
+           <a href="{% url 'project:delete_project_direct' project.pk %}" class="btn btn-sm btn-danger">Delete</a>
+
         </td>
       </tr>
       {% endfor %}

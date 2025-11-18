@@ -1,0 +1,30 @@
+{% extends 'payroll/base.html' %}
+
+{% block title %}Payslip - {{ payroll.employee.get_full_name }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">🧾 Payslip for {{ payroll.employee.get_full_name }}</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tr>
+                <th>Month</th>
+                <td>{{ payroll.month|date:"F Y" }}</td>
+            </tr>
+            <tr>
+                <th>Gross Salary</th>
+                <td>₹{{ payroll.gross_salary }}</td>
+            </tr>
+            <tr>
+                <th>Total Deductions</th>
+                <td>₹{{ payroll.total_deductions }}</td>
+            </tr>
+            <tr class="table-success">
+                <th>Net Salary</th>
+                <td><strong>₹{{ payroll.net_salary }}</strong></td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

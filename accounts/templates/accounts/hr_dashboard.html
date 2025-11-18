@@ -1,14 +1,310 @@
-{% extends 'attendance/base.html' %}
+{% extends 'accounts/base.html' %}
 {% block content %}
-<div class="container mt-4">
-  <h4 class="mb-4 text-center">HR Dashboard</h4>
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:hr_approval_list' %}" class="btn btn-warning w-100">View Regularization Requests</a>
+
+<h3 class="mb-4 text-center fw-bold">HR Dashboard</h3>
+
+<!-- ====================== -->
+<!-- 1. LEAVE REQUESTS -->
+<!-- ====================== -->
+<div class="card shadow mb-4">
+    <div class="card-header bg-dark text-white fw-bold">
+        Employee Leave Requests
     </div>
-    <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-dark w-100">Export All Attendance</a>
+
+    <div class="card-body">
+        {% if leave_requests %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Employee</th>
+                    <th>Type</th>
+                    <th>Dates</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Applied On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for leave in leave_requests %}
+                <tr>
+                    <td>{{ leave.user.username }}</td>
+                    <td>{{ leave.leave_type }}</td>
+                    <td>{{ leave.start_date }} → {{ leave.end_date }}</td>
+                    <td>{{ leave.reason }}</td>
+                    <td>
+                        {% if leave.status == 'PENDING' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif leave.status == 'APPROVED' %}
+                            <span class="badge bg-success">Approved</span>
+                        {% else %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ leave.created_at|date:"d M Y, h:i A" }}</td>
+                    <td>
+                        {% if leave.status == 'PENDING' %}
+                            <a href="{% url 'leave:approve_leave' leave.id %}" class="btn btn-success btn-sm">Approve</a>
+                            <a href="{% url 'leave:reject_leave' leave.id %}" class="btn btn-danger btn-sm">Reject</a>
+                        {% else %}
+                            <span class="text-muted">No Action</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="text-center text-muted">No leave requests yet.</p>
+        {% endif %}
     </div>
+</div>
+
+
+
+
+<!-- ====================== -->
+<!-- 2. PROJECT LIST -->
+<!-- ====================== -->
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <span class="fw-bold">Projects</span>
+        <a href="{% url 'project:add_project' %}" class="btn btn-light btn-sm fw-bold">+ Add Project</a>
+    </div>
+
+    <div class="card-body">
+        {% if projects %}
+        <table class="table table-bordered">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Start</th>
+                    <th>End</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for p in projects %}
+                <tr>
+                    <td>{{ p.project_id }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.client_name }}</td>
+                    <td>{{ p.status }}</td>
+                    <td>{{ p.start_date }}</td>
+                    <td>{{ p.end_date }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+            <p class="text-center text-muted">No projects available.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+
+
+<!-- ============================== -->
+<!-- 3. EMPLOYEE – PROJECT MAPPINGS -->
+<!-- ============================== -->
+<div class="card shadow mb-4">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <span class="fw-bold">Employee – Project Mappings</span>
+       <a href="{% url 'project:assign_employee' %}" class="btn btn-light btn-sm fw-bold">+ Add Mapping</a>
+
+    </div>
+
+    <div class="card-body">
+        {% if mappings %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-success">
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Project</th>
+                    <th>Role</th>
+                    <th>Responsibilities</th>
+                    <th>Assigned</th>
+                    <th>Released</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for m in mappings %}
+                <tr>
+                    <td>{{ m.employee_id }}</td>
+                    <td>{{ m.project.name }}</td>
+                    <td>{{ m.role }}</td>
+                    <td>{{ m.responsibilities }}</td>
+                    <td>{{ m.assigned_date }}</td>
+                    <td>{{ m.release_date|default:"—" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+            <p class="text-center text-muted">No project mappings found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ====================== -->
+<!-- 4. ATTENDANCE TODAY -->
+<!-- ====================== -->
+<div class="card shadow mb-4">
+    <div class="card-header bg-info text-white fw-bold d-flex justify-content-between">
+        <span>Today's Attendance</span>
+        <a href="{% url 'attendance:view_attendance' %}" class="btn btn-light btn-sm">View All</a>
+    </div>
+
+    <div class="card-body">
+        {% if attendance_today %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-info">
+                <tr>
+                    <th>Employee</th>
+                    <th>Status</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for a in attendance_today %}
+                <tr>
+                    <td>{{ a.employee.username }}</td>
+                    <td>
+                        {% if a.status == "Present" %}
+                            <span class="badge bg-success">Present</span>
+                        {% elif a.status == "Late" %}
+                            <span class="badge bg-warning text-dark">Late</span>
+                        {% elif a.status == "Early Leave" %}
+                            <span class="badge bg-danger">Early Leave</span>
+                        {% elif a.status == "Holiday" %}
+                            <span class="badge bg-primary">Holiday</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Absent</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ a.check_in|default:"—" }}</td>
+                    <td>{{ a.check_out|default:"—" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+            <p class="text-center text-muted">No attendance marked for today.</p>
+        {% endif %}
+    </div>
+</div>
+<div class="card mb-4">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0">Employees</h5>
+  </div>
+  <div class="card-body">
+    <a href="{% url 'accounts:add_employee' %}" class="btn btn-success mb-3">
+      ➕ Add Employee
+    </a>
+
+    <!-- List of employees -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Joining Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for employee in employees %}
+        <tr>
+          <td>{{ employee.id }}</td>
+          <td>{{ employee.username }}</td>
+          <td>{{ employee.email }}</td>
+          <td>{{ employee.department }}</td>
+          <td>{{ employee.joining_date }}</td>
+          <td>
+            <a href="{% url 'accounts:update_employee' employee.pk %}" class="btn btn-primary btn-sm">Edit</a>
+            <a href="{% url 'accounts:delete_employee' employee.pk %}" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6">No employees found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
+
+
+<!-- Employee List Section -->
+<div class="card mb-4">
+  <div class="card-header bg-secondary text-white">
+    <h5 class="mb-0">👥 All Employees</h5>
+  </div>
+  <div class="card-body">
+    {% if employees %}
+    <ul class="list-group">
+      {% for emp in employees %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ emp.username }} ({{ emp.email }})
+        <span class="badge bg-primary">{{ emp.department }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No employees found.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Add Payroll Section -->
+<div class="row mt-4">
+
+  <!-- Add Salary Component -->
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        Add Salary Component
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ salary_component_form.as_p }}
+          <button type="submit" name="add_component" class="btn btn-success">Add Component</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Salary to Employee -->
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-white">
+        Assign Salary to Employee
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ employee_salary_form.as_p }}
+          <button type="submit" name="assign_salary" class="btn btn-success">Assign Salary</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 {% endblock %}

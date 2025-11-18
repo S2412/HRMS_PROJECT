@@ -4,14 +4,21 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 
+
+
+
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
+   
     ROLE_CHOICES = (
         ('HR_ADMIN', 'HR Admin'),
         ('EMPLOYEE', 'Employee'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     last_login_time = models.DateTimeField(null=True, blank=True)
+    joining_date = models.DateField(null=True, blank=True)
+    department = models.CharField(max_length=100, blank=True)
+
 
     def __str__(self):
         return self.email

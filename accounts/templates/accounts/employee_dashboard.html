@@ -1,27 +1,121 @@
-{% extends 'attendance/base.html' %}
+{% extends 'accounts/base.html' %}
+{% block title %}Employee Dashboard{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-  <h4 class="mb-4 text-center">Employee Dashboard</h4>
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:view_attendance' %}" class="btn btn-outline-primary w-100">
-        <i class="bi bi-eye"></i> View Attendance
-      </a>
+  <h2 class="mb-4">👋 Welcome, {{ request.user.first_name }}</h2>
+
+  <!-- Attendance Actions -->
+  <div class="mb-4">
+    <a href="{% url 'attendance:mark_attendance' %}" class="btn btn-primary me-2">✅ Mark Attendance</a>
+    <a href="{% url 'attendance:mark_attendance_form' %}" class="btn btn-secondary">📝 Manual Attendance</a>
+  </div>
+
+  <!-- Attendance Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">📅 Recent Attendance</h5>
     </div>
-    <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:mark_attendance_form' %}" class="btn btn-outline-success w-100">
-        <i class="bi bi-pencil-square"></i> Mark Attendance
-      </a>
+    <div class="card-body p-0">
+      {% if attendance %}
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in attendance %}
+          <tr>
+            <td>{{ a.date }}</td>
+            <td>{{ a.check_in|default:"—" }}</td>
+            <td>{{ a.check_out|default:"—" }}</td>
+            <td>{{ a.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-3">No attendance records found.</div>
+      {% endif %}
     </div>
-    <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:monthly_attendance' %}" class="btn btn-outline-info w-100">
-        <i class="bi bi-calendar-month"></i> Monthly Summary
-      </a>
+  </div>
+
+  <!-- Leave Application Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0">📝 Apply for Leave</h5>
     </div>
-    <div class="col-md-6 mb-3">
-      <a href="{% url 'attendance:export_attendance_csv' %}" class="btn btn-outline-dark w-100">
-        <i class="bi bi-file-earmark-arrow-down"></i> Export CSV
-      </a>
+    <div class="card-body">
+      <form method="post" action="{% url 'leave:apply_leave' %}">
+        {% csrf_token %}
+        {{ leave_form.as_p }}
+        <button type="submit" class="btn btn-success">Submit Leave</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Leave Requests Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0">🗂 Recent Leave Requests</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if leaves %}
+      <table class="table table-bordered mb-0">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in leaves %}
+          <tr>
+            <td>{{ l.leave_type.name }}</td>
+            <td>{{ l.start_date }}</td>
+            <td>{{ l.end_date }}</td>
+            <td>
+              <span class="badge bg-{{ l.status|lower }}">
+                {{ l.status }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-3">No leave requests found.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Project Assignments Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">📁 Project Assignments</h5>
+    </div>
+    <div class="card-body">
+      {% if projects %}
+      <ul class="list-group">
+        {% for p in projects %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ p.project.name }}</strong><br>
+            <small class="text-muted">{{ p.project.description|truncatechars:80 }}</small>
+          </div>
+          <span class="badge bg-secondary">{{ p.role }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No project assignments found.</p>
+      {% endif %}
     </div>
   </div>
 </div>

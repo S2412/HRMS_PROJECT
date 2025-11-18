@@ -1,0 +1,32 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between">
+        <h4>Employee List</h4>
+        <a href="{% url 'accounts:add_employee' %}" class="btn btn-light btn-sm">Add Employee</a>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Department</th><th>Joining Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for emp in employees %}
+                <tr>
+                    <td>{{ emp.username }}</td>
+                    <td>{{ emp.email }}</td>
+                    <td>{{ emp.department }}</td>
+                    <td>{{ emp.joining_date }}</td>
+                    <td>
+                        <a href="{% url 'accounts:update_employee' emp.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{% url 'accounts:delete_employee' emp.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No employees found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

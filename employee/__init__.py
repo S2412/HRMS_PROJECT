@@ -1,1 +1,0 @@
-# Marks the employee app as a Python package

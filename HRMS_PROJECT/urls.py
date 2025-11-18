@@ -23,10 +23,17 @@ urlpatterns = [
     path('admin/', admin.site.urls),
      path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
       path('attendance/', include('attendance.urls')),
-       path('leave/', include('leave.urls')),
-        path('employee/', include('employee.urls')),
+       
+
          path('project/', include(('project_management.urls', 'project'), namespace='project')),
+         path('leave/', include('leave.urls')),
+          path('payroll/', include('payroll.urls')),
+
 
 
 
 ]
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

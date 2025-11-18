@@ -1,0 +1,17 @@
+{% extends 'payroll/base.html' %}
+
+{% block title %}Assign Salary{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">💰 Assign Salary to Employee</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Assign</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
